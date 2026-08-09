@@ -4,7 +4,6 @@
    V1 — STATELESS
 ========================================================= */
 
-
 document.addEventListener("DOMContentLoaded", () => {
   /* =======================================================
      ELEMENT REFERENCES
@@ -19,10 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const categoryInputs = Array.from(
     document.querySelectorAll('input[name="workCategory"]')
-  );
-
-  const quickHourButtons = Array.from(
-    document.querySelectorAll(".quick-hour-button")
   );
 
   const outputSection = document.getElementById("log-output-section");
@@ -46,21 +41,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =======================================================
-     STATIC EMPLOYEE
+     EMPLOYEE
   ======================================================== */
 
   const employeeName = "John Johnson";
 
 
   /* =======================================================
-     INITIALIZE DATE
-     Uses the employee's local device date.
+     INITIALIZE
   ======================================================== */
 
   setTodayAsDefault();
 
+
   /* =======================================================
-     FORM SUBMISSION
+     GENERATE LOG
   ======================================================== */
 
   form.addEventListener("submit", (event) => {
@@ -69,12 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
     clearStatus();
 
     const formData = getFormData();
+    const validation = validateFormData(formData);
 
-    const validationResult = validateFormData(formData);
-
-    if (!validationResult.valid) {
-      showStatus(validationResult.message, "error");
-      focusValidationTarget(validationResult.field);
+    if (!validation.valid) {
+      showStatus(validation.message, "error");
+      focusField(validation.field);
       return;
     }
 
@@ -117,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Clipboard copy failed:", error);
 
       showStatus(
-        "Unable to copy automatically. Try downloading the log instead.",
+        "Unable to copy automatically. Use Download Log instead.",
         "error"
       );
     }
@@ -174,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTodayAsDefault();
 
+    previewEmployee.textContent = employeeName;
     previewDate.textContent = "";
     previewProject.textContent = "";
     previewHours.textContent = "";
@@ -194,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =======================================================
-     DATA COLLECTION
+     GET FORM DATA
   ======================================================== */
 
   function getFormData() {
@@ -206,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
       employee: employeeName,
       date: dateInput.value,
       project: projectInput.value,
-      hours: normalizeHours(hoursInput.value),
+      hours: hoursInput.value.trim(),
       categories: selectedCategories,
       workPerformed: workPerformedInput.value.trim()
     };
@@ -249,6 +244,14 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }
 
+    if (hoursNumber % 0.5 !== 0) {
+      return {
+        valid: false,
+        field: "hours",
+        message: "Hours must be entered in 0.5-hour increments."
+      };
+    }
+
     if (data.categories.length === 0) {
       return {
         valid: false,
@@ -271,7 +274,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  function focusValidationTarget(field) {
+  /* =======================================================
+     FOCUS INVALID FIELD
+  ======================================================== */
+
+  function focusField(field) {
     switch (field) {
       case "date":
         dateInput.focus();
@@ -326,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =======================================================
-     FORMATTED TEXT LOG
+     TEXT OUTPUT
   ======================================================== */
 
   function buildFormattedLog(data) {
@@ -363,9 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = new Date();
 
     const year = now.getFullYear();
-
     const month = String(now.getMonth() + 1).padStart(2, "0");
-
     const day = String(now.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
@@ -398,40 +403,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =======================================================
-     HOURS HELPERS
-  ======================================================== */
-
-  function normalizeHours(value) {
-    if (value === "") {
-      return "";
-    }
-
-    const numericValue = Number(value);
-
-    if (Number.isNaN(numericValue)) {
-      return "";
-    }
-
-    return numericValue.toFixed(1);
-  }
-
-
-  function updateQuickHourSelection(currentValue) {
-    const numericCurrentValue = Number(currentValue);
-
-    quickHourButtons.forEach((button) => {
-      const buttonValue = Number(button.dataset.hours);
-
-      const isMatch =
-        !Number.isNaN(numericCurrentValue) &&
-        numericCurrentValue === buttonValue;
-
-      button.classList.toggle("is-selected", isMatch);
-    });
-  }
-
-
-  /* =======================================================
      CLIPBOARD
   ======================================================== */
 
@@ -441,7 +412,6 @@ document.addEventListener("DOMContentLoaded", () => {
       typeof navigator.clipboard.writeText === "function"
     ) {
       await navigator.clipboard.writeText(text);
-
       return;
     }
 
@@ -453,7 +423,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const temporaryTextarea = document.createElement("textarea");
 
     temporaryTextarea.value = text;
-
     temporaryTextarea.setAttribute("readonly", "");
 
     temporaryTextarea.style.position = "fixed";
@@ -495,7 +464,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =======================================================
-     STATUS MESSAGES
+     STATUS MESSAGE
   ======================================================== */
 
   function showStatus(message, type = "success") {
