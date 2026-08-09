@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const actionStatus = document.getElementById("action-status");
 
-  const employeeName = "John Johnson";
+  const employee = document.getElementById("employee-name").value.trim();
 
 
   /* ---------------------------------------------------------
