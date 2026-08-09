@@ -1,14 +1,4 @@
-/* =========================================================
-   OHM ELECTRICAL SERVICES
-   MOBILE OTJ DAILY WORK LOG
-   V1 — STATELESS
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-  /* =======================================================
-     ELEMENT REFERENCES
-  ======================================================== */
-
+document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("otj-form");
 
   const dateInput = document.getElementById("work-date");
@@ -16,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const hoursInput = document.getElementById("hours");
   const workPerformedInput = document.getElementById("work-performed");
 
-  const categoryInputs = Array.from(
-    document.querySelectorAll('input[name="workCategory"]')
+  const categoryInputs = document.querySelectorAll(
+    'input[name="workCategory"]'
   );
 
   const outputSection = document.getElementById("log-output-section");
@@ -39,447 +29,229 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const actionStatus = document.getElementById("action-status");
 
-
-  /* =======================================================
-     EMPLOYEE
-  ======================================================== */
-
   const employeeName = "John Johnson";
 
 
-  /* =======================================================
-     INITIALIZE
-  ======================================================== */
+  /* ---------------------------------------------------------
+     DEFAULT DATE
+  --------------------------------------------------------- */
 
-  setTodayAsDefault();
+  function setToday() {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    dateInput.value = `${year}-${month}-${day}`;
+  }
+
+  setToday();
 
 
-  /* =======================================================
+  /* ---------------------------------------------------------
+     FORMAT DATE
+  --------------------------------------------------------- */
+
+  function formatDate(dateString) {
+    const parts = dateString.split("-");
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    const date = new Date(year, month - 1, day);
+
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
+  }
+
+
+  /* ---------------------------------------------------------
      GENERATE LOG
-  ======================================================== */
+  --------------------------------------------------------- */
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    clearStatus();
+    const selectedCategories = [];
 
-    const formData = getFormData();
-    const validation = validateFormData(formData);
+    categoryInputs.forEach(function (input) {
+      if (input.checked) {
+        selectedCategories.push(input.value);
+      }
+    });
 
-    if (!validation.valid) {
-      showStatus(validation.message, "error");
-      focusField(validation.field);
+    const date = dateInput.value;
+    const project = projectInput.value;
+    const hours = hoursInput.value;
+    const workPerformed = workPerformedInput.value.trim();
+
+    if (!date) {
+      alert("Please select a date.");
       return;
     }
 
-    renderPreview(formData);
+    if (!project) {
+      alert("Please select a project.");
+      return;
+    }
 
-    const formattedLog = buildFormattedLog(formData);
+    if (!hours) {
+      alert("Please enter hours.");
+      return;
+    }
 
-    generatedLogText.value = formattedLog;
+    if (selectedCategories.length === 0) {
+      alert("Please select at least one work category.");
+      return;
+    }
+
+    if (!workPerformed) {
+      alert("Please describe the work performed.");
+      return;
+    }
+
+    const formattedDate = formatDate(date);
+    const formattedHours = Number(hours).toFixed(1);
+
+    previewEmployee.textContent = employeeName;
+    previewDate.textContent = formattedDate;
+    previewProject.textContent = project;
+    previewHours.textContent = formattedHours;
+
+    previewCategories.innerHTML = "";
+
+    selectedCategories.forEach(function (category) {
+      const line = document.createElement("p");
+      line.textContent = category;
+      previewCategories.appendChild(line);
+    });
+
+    previewWorkPerformed.textContent = workPerformed;
+
+    const logText =
+`OHM ELECTRICAL SERVICES
+DAILY OTJ WORK LOG
+
+Employee: ${employeeName}
+Date: ${formattedDate}
+Project: ${project}
+Hours: ${formattedHours}
+
+WORK CATEGORY
+${selectedCategories.join("\n")}
+
+WORK PERFORMED
+${workPerformed}`;
+
+    generatedLogText.value = logText;
 
     outputSection.hidden = false;
 
-    requestAnimationFrame(() => {
-      outputSection.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+    outputSection.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
     });
   });
 
 
-  /* =======================================================
+  /* ---------------------------------------------------------
      COPY LOG
-  ======================================================== */
+  --------------------------------------------------------- */
 
-  copyButton.addEventListener("click", async () => {
-    clearStatus();
+  copyButton.addEventListener("click", async function () {
+    const text = generatedLogText.value;
 
-    const logText = generatedLogText.value.trim();
-
-    if (!logText) {
-      showStatus("Generate a log before copying.", "error");
+    if (!text) {
       return;
     }
 
     try {
-      await copyTextToClipboard(logText);
+      await navigator.clipboard.writeText(text);
 
-      showStatus("Log copied to clipboard.", "success");
+      actionStatus.textContent = "Log copied to clipboard.";
     } catch (error) {
-      console.error("Clipboard copy failed:", error);
+      generatedLogText.hidden = false;
+      generatedLogText.select();
 
-      showStatus(
-        "Unable to copy automatically. Use Download Log instead.",
-        "error"
-      );
+      document.execCommand("copy");
+
+      generatedLogText.hidden = true;
+
+      actionStatus.textContent = "Log copied to clipboard.";
     }
   });
 
 
-  /* =======================================================
+  /* ---------------------------------------------------------
      DOWNLOAD LOG
-  ======================================================== */
+  --------------------------------------------------------- */
 
-  downloadButton.addEventListener("click", () => {
-    clearStatus();
+  downloadButton.addEventListener("click", function () {
+    const text = generatedLogText.value;
 
-    const logText = generatedLogText.value.trim();
-
-    if (!logText) {
-      showStatus("Generate a log before downloading.", "error");
+    if (!text) {
       return;
     }
 
-    const dateValue = dateInput.value || getTodayLocalISO();
+    const date = dateInput.value;
 
-    const filename = buildFilename(employeeName, dateValue);
+    const fileName =
+      "John_Johnson_OTJ_" +
+      date +
+      ".txt";
 
-    const blob = new Blob([logText], {
+    const blob = new Blob([text], {
       type: "text/plain;charset=utf-8"
     });
 
-    const objectUrl = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
-    const downloadLink = document.createElement("a");
+    const link = document.createElement("a");
 
-    downloadLink.href = objectUrl;
-    downloadLink.download = filename;
+    link.href = url;
+    link.download = fileName;
 
-    document.body.appendChild(downloadLink);
+    document.body.appendChild(link);
 
-    downloadLink.click();
+    link.click();
 
-    downloadLink.remove();
+    document.body.removeChild(link);
 
-    URL.revokeObjectURL(objectUrl);
+    URL.revokeObjectURL(url);
 
-    showStatus("Log download started.", "success");
+    actionStatus.textContent = "Log downloaded.";
   });
 
 
-  /* =======================================================
-     RESET / NEW LOG
-  ======================================================== */
+  /* ---------------------------------------------------------
+     RESET
+  --------------------------------------------------------- */
 
-  resetButton.addEventListener("click", () => {
+  resetButton.addEventListener("click", function () {
     form.reset();
 
-    setTodayAsDefault();
+    setToday();
 
-    previewEmployee.textContent = employeeName;
+    generatedLogText.value = "";
+
     previewDate.textContent = "";
     previewProject.textContent = "";
     previewHours.textContent = "";
     previewCategories.innerHTML = "";
     previewWorkPerformed.textContent = "";
 
-    generatedLogText.value = "";
+    actionStatus.textContent = "";
 
     outputSection.hidden = true;
-
-    clearStatus();
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
   });
-
-
-  /* =======================================================
-     GET FORM DATA
-  ======================================================== */
-
-  function getFormData() {
-    const selectedCategories = categoryInputs
-      .filter((input) => input.checked)
-      .map((input) => input.value);
-
-    return {
-      employee: employeeName,
-      date: dateInput.value,
-      project: projectInput.value,
-      hours: hoursInput.value.trim(),
-      categories: selectedCategories,
-      workPerformed: workPerformedInput.value.trim()
-    };
-  }
-
-
-  /* =======================================================
-     VALIDATION
-  ======================================================== */
-
-  function validateFormData(data) {
-    if (!data.date) {
-      return {
-        valid: false,
-        field: "date",
-        message: "Select the work date."
-      };
-    }
-
-    if (!data.project) {
-      return {
-        valid: false,
-        field: "project",
-        message: "Select a project."
-      };
-    }
-
-    const hoursNumber = Number(data.hours);
-
-    if (
-      !data.hours ||
-      Number.isNaN(hoursNumber) ||
-      hoursNumber < 0.5 ||
-      hoursNumber > 24
-    ) {
-      return {
-        valid: false,
-        field: "hours",
-        message: "Enter valid hours between 0.5 and 24."
-      };
-    }
-
-    if (hoursNumber % 0.5 !== 0) {
-      return {
-        valid: false,
-        field: "hours",
-        message: "Hours must be entered in 0.5-hour increments."
-      };
-    }
-
-    if (data.categories.length === 0) {
-      return {
-        valid: false,
-        field: "categories",
-        message: "Select at least one work category."
-      };
-    }
-
-    if (!data.workPerformed) {
-      return {
-        valid: false,
-        field: "workPerformed",
-        message: "Describe the work performed."
-      };
-    }
-
-    return {
-      valid: true
-    };
-  }
-
-
-  /* =======================================================
-     FOCUS INVALID FIELD
-  ======================================================== */
-
-  function focusField(field) {
-    switch (field) {
-      case "date":
-        dateInput.focus();
-        break;
-
-      case "project":
-        projectInput.focus();
-        break;
-
-      case "hours":
-        hoursInput.focus();
-        break;
-
-      case "categories":
-        if (categoryInputs.length > 0) {
-          categoryInputs[0].focus();
-        }
-        break;
-
-      case "workPerformed":
-        workPerformedInput.focus();
-        break;
-
-      default:
-        break;
-    }
-  }
-
-
-  /* =======================================================
-     PREVIEW
-  ======================================================== */
-
-  function renderPreview(data) {
-    previewEmployee.textContent = data.employee;
-    previewDate.textContent = formatDateForDisplay(data.date);
-    previewProject.textContent = data.project;
-    previewHours.textContent = Number(data.hours).toFixed(1);
-
-    previewCategories.innerHTML = "";
-
-    data.categories.forEach((category) => {
-      const categoryLine = document.createElement("p");
-
-      categoryLine.textContent = category;
-
-      previewCategories.appendChild(categoryLine);
-    });
-
-    previewWorkPerformed.textContent = data.workPerformed;
-  }
-
-
-  /* =======================================================
-     TEXT OUTPUT
-  ======================================================== */
-
-  function buildFormattedLog(data) {
-    const categoryText = data.categories.join("\n");
-
-    return [
-      "OHM ELECTRICAL SERVICES",
-      "DAILY OTJ WORK LOG",
-      "",
-      `Employee: ${data.employee}`,
-      `Date: ${formatDateForDisplay(data.date)}`,
-      `Project: ${data.project}`,
-      `Hours: ${Number(data.hours).toFixed(1)}`,
-      "",
-      "WORK CATEGORY",
-      categoryText,
-      "",
-      "WORK PERFORMED",
-      data.workPerformed
-    ].join("\n");
-  }
-
-
-  /* =======================================================
-     DATE HELPERS
-  ======================================================== */
-
-  function setTodayAsDefault() {
-    dateInput.value = getTodayLocalISO();
-  }
-
-
-  function getTodayLocalISO() {
-    const now = new Date();
-
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }
-
-
-  function formatDateForDisplay(dateString) {
-    if (!dateString) {
-      return "";
-    }
-
-    const parts = dateString.split("-");
-
-    if (parts.length !== 3) {
-      return dateString;
-    }
-
-    const year = Number(parts[0]);
-    const month = Number(parts[1]);
-    const day = Number(parts[2]);
-
-    const localDate = new Date(year, month - 1, day);
-
-    return new Intl.DateTimeFormat("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric"
-    }).format(localDate);
-  }
-
-
-  /* =======================================================
-     CLIPBOARD
-  ======================================================== */
-
-  async function copyTextToClipboard(text) {
-    if (
-      navigator.clipboard &&
-      typeof navigator.clipboard.writeText === "function"
-    ) {
-      await navigator.clipboard.writeText(text);
-      return;
-    }
-
-    fallbackCopyText(text);
-  }
-
-
-  function fallbackCopyText(text) {
-    const temporaryTextarea = document.createElement("textarea");
-
-    temporaryTextarea.value = text;
-    temporaryTextarea.setAttribute("readonly", "");
-
-    temporaryTextarea.style.position = "fixed";
-    temporaryTextarea.style.top = "-9999px";
-    temporaryTextarea.style.left = "-9999px";
-    temporaryTextarea.style.opacity = "0";
-
-    document.body.appendChild(temporaryTextarea);
-
-    temporaryTextarea.select();
-
-    temporaryTextarea.setSelectionRange(
-      0,
-      temporaryTextarea.value.length
-    );
-
-    const successful = document.execCommand("copy");
-
-    temporaryTextarea.remove();
-
-    if (!successful) {
-      throw new Error("Fallback clipboard copy failed.");
-    }
-  }
-
-
-  /* =======================================================
-     DOWNLOAD FILENAME
-  ======================================================== */
-
-  function buildFilename(employee, date) {
-    const safeEmployee = employee
-      .trim()
-      .replace(/\s+/g, "_")
-      .replace(/[^a-zA-Z0-9_-]/g, "");
-
-    return `${safeEmployee}_OTJ_${date}.txt`;
-  }
-
-
-  /* =======================================================
-     STATUS MESSAGE
-  ======================================================== */
-
-  function showStatus(message, type = "success") {
-    actionStatus.textContent = message;
-
-    if (type === "error") {
-      actionStatus.style.color = "var(--danger)";
-    } else {
-      actionStatus.style.color = "var(--success)";
-    }
-  }
-
-
-  function clearStatus() {
-    actionStatus.textContent = "";
-    actionStatus.style.color = "";
-  }
 });
