@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("otj-form");
 
+  const employeeInput = document.getElementById("employee-name");
   const dateInput = document.getElementById("work-date");
   const projectInput = document.getElementById("project");
   const hoursInput = document.getElementById("hours");
@@ -26,15 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const copyButton = document.getElementById("copy-log");
   const downloadButton = document.getElementById("download-log");
   const resetButton = document.getElementById("reset-log");
-
   const actionStatus = document.getElementById("action-status");
 
-  const employee = document.getElementById("employee-name").value.trim();
 
-
-  /* ---------------------------------------------------------
-     DEFAULT DATE
-  --------------------------------------------------------- */
+  // =========================================================
+  // DEFAULT DATE
+  // =========================================================
 
   function setToday() {
     const today = new Date();
@@ -49,9 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
   setToday();
 
 
-  /* ---------------------------------------------------------
-     FORMAT DATE
-  --------------------------------------------------------- */
+  // =========================================================
+  // FORMAT DATE
+  // =========================================================
 
   function formatDate(dateString) {
     const parts = dateString.split("-");
@@ -70,12 +68,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 
-  /* ---------------------------------------------------------
-     GENERATE LOG
-  --------------------------------------------------------- */
+  // =========================================================
+  // GENERATE LOG
+  // =========================================================
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
+
+    const employeeName = employeeInput.value.trim();
 
     const selectedCategories = [];
 
@@ -89,6 +89,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const project = projectInput.value;
     const hours = hoursInput.value;
     const workPerformed = workPerformedInput.value.trim();
+
+
+    // Validation
+
+    if (!employeeName) {
+      alert("Please enter employee name.");
+      employeeInput.focus();
+      return;
+    }
 
     if (!date) {
       alert("Please select a date.");
@@ -115,8 +124,12 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+
     const formattedDate = formatDate(date);
     const formattedHours = Number(hours).toFixed(1);
+
+
+    // Preview
 
     previewEmployee.textContent = employeeName;
     previewDate.textContent = formattedDate;
@@ -127,11 +140,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     selectedCategories.forEach(function (category) {
       const line = document.createElement("p");
+
       line.textContent = category;
+
       previewCategories.appendChild(line);
     });
 
     previewWorkPerformed.textContent = workPerformed;
+
+
+    // Plain-text log
 
     const logText =
 `OHM ELECTRICAL SERVICES
@@ -159,9 +177,9 @@ ${workPerformed}`;
   });
 
 
-  /* ---------------------------------------------------------
-     COPY LOG
-  --------------------------------------------------------- */
+  // =========================================================
+  // COPY LOG
+  // =========================================================
 
   copyButton.addEventListener("click", async function () {
     const text = generatedLogText.value;
@@ -175,21 +193,29 @@ ${workPerformed}`;
 
       actionStatus.textContent = "Log copied to clipboard.";
     } catch (error) {
-      generatedLogText.hidden = false;
-      generatedLogText.select();
+      const temporaryTextArea = document.createElement("textarea");
+
+      temporaryTextArea.value = text;
+      temporaryTextArea.style.position = "fixed";
+      temporaryTextArea.style.opacity = "0";
+
+      document.body.appendChild(temporaryTextArea);
+
+      temporaryTextArea.focus();
+      temporaryTextArea.select();
 
       document.execCommand("copy");
 
-      generatedLogText.hidden = true;
+      temporaryTextArea.remove();
 
       actionStatus.textContent = "Log copied to clipboard.";
     }
   });
 
 
-  /* ---------------------------------------------------------
-     DOWNLOAD LOG
-  --------------------------------------------------------- */
+  // =========================================================
+  // DOWNLOAD LOG
+  // =========================================================
 
   downloadButton.addEventListener("click", function () {
     const text = generatedLogText.value;
@@ -198,12 +224,14 @@ ${workPerformed}`;
       return;
     }
 
-    const date = dateInput.value;
+    const employeeName = employeeInput.value.trim();
+
+    const safeEmployeeName = employeeName
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9_-]/g, "");
 
     const fileName =
-      "John_Johnson_OTJ_" +
-      date +
-      ".txt";
+      `${safeEmployeeName}_OTJ_${dateInput.value}.txt`;
 
     const blob = new Blob([text], {
       type: "text/plain;charset=utf-8"
@@ -220,7 +248,7 @@ ${workPerformed}`;
 
     link.click();
 
-    document.body.removeChild(link);
+    link.remove();
 
     URL.revokeObjectURL(url);
 
@@ -228,9 +256,9 @@ ${workPerformed}`;
   });
 
 
-  /* ---------------------------------------------------------
-     RESET
-  --------------------------------------------------------- */
+  // =========================================================
+  // RESET
+  // =========================================================
 
   resetButton.addEventListener("click", function () {
     form.reset();
@@ -239,6 +267,7 @@ ${workPerformed}`;
 
     generatedLogText.value = "";
 
+    previewEmployee.textContent = "";
     previewDate.textContent = "";
     previewProject.textContent = "";
     previewHours.textContent = "";
