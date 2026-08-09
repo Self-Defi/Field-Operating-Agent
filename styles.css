@@ -1111,3 +1111,20 @@ input[type="date"] {
     animation-iteration-count: 1 !important;
   }
 }
+
+.employee-name-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 0;
+}
+
+.employee-name-input::placeholder {
+  color: var(--ohm-mid-gray);
+  opacity: 1;
+}
