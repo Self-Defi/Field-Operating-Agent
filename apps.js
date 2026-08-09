@@ -59,29 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setTodayAsDefault();
 
-
-  /* =======================================================
-     QUICK HOURS
-  ======================================================== */
-
-  quickHourButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const selectedHours = button.dataset.hours;
-
-      hoursInput.value = selectedHours;
-
-      updateQuickHourSelection(selectedHours);
-
-      hoursInput.focus();
-    });
-  });
-
-
-  hoursInput.addEventListener("input", () => {
-    updateQuickHourSelection(hoursInput.value);
-  });
-
-
   /* =======================================================
      FORM SUBMISSION
   ======================================================== */
@@ -196,10 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
     form.reset();
 
     setTodayAsDefault();
-
-    quickHourButtons.forEach((button) => {
-      button.classList.remove("is-selected");
-    });
 
     previewDate.textContent = "";
     previewProject.textContent = "";
