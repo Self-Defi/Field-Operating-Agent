@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <meta
+    name="description"
+    content="Ohm Electrical Services mobile OTJ Daily Work Log."
+  >
+
+  <meta name="theme-color" content="#111111">
+
+  <title>OTJ Daily Work Log | Ohm Electrical Services</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="brand-mark__symbol">Ω</span>
+        </div>
+
+        <div class="brand-copy">
+          <p class="brand-name">OHM ELECTRICAL SERVICES</p>
+          <p class="brand-subtitle">Daily OTJ Work Log</p>
+        </div>
+      </div>
+    </header>
+
+
+    <!-- =========================================================
+         MAIN APPLICATION
+    ========================================================== -->
+    <main class="main-content">
+
+      <!-- =======================================================
+           EMPLOYEE IDENTITY
+      ======================================================== -->
+      <section
+        class="employee-card"
+        aria-labelledby="employee-heading"
+      >
+        <div class="section-label" id="employee-heading">
+          Employee
+        </div>
+
+        <div class="employee-name">
+          John Johnson
+        </div>
+      </section>
+
+
+      <!-- =======================================================
+           DAILY OTJ FORM
+      ======================================================== -->
+      <section
+        class="log-form-section"
+        aria-labelledby="log-form-heading"
+      >
+
+        <div class="section-heading">
+          <p class="section-kicker">Jobsite Entry</p>
+          <h1 id="log-form-heading">Daily OTJ Work Log</h1>
+          <p class="section-description">
+            Record today’s project, hours, work categories, and work performed.
+          </p>
+        </div>
+
+
+        <form id="otj-form" class="otj-form">
+
+          <!-- =================================================
+               1. DATE
+          ================================================== -->
+          <div class="form-group">
+            <label for="work-date" class="form-label">
+              <span class="field-number">01</span>
+              Date
+            </label>
+
+            <input
+              type="date"
+              id="work-date"
+              name="workDate"
+              class="form-control"
+              required
+              autocomplete="off"
+            >
+          </div>
+
+
+          <!-- =================================================
+               2. PROJECT
+          ================================================== -->
+          <div class="form-group">
+            <label for="project" class="form-label">
+              <span class="field-number">02</span>
+              Project
+            </label>
+
+            <select
+              id="project"
+              name="project"
+              class="form-control"
+              required
+            >
+              <option value="" selected disabled>
+                Select project
+              </option>
+
+              <option value="West Cactus">
+                West Cactus
+              </option>
+
+              <option value="Downtown Phoenix">
+                Downtown Phoenix
+              </option>
+
+              <option value="Tempe Commercial">
+                Tempe Commercial
+              </option>
+
+              <option value="Scottsdale Service">
+                Scottsdale Service
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+            </select>
+          </div>
+
+
+          <!-- =================================================
+               3. HOURS
+          ================================================== -->
+          <fieldset class="form-group hours-group">
+            <legend class="form-label">
+              <span class="field-number">03</span>
+              Hours
+            </legend>
+
+            <div class="hours-entry">
+
+              <div class="hours-input-wrapper">
+                <input
+                  type="number"
+                  id="hours"
+                  name="hours"
+                  class="form-control hours-input"
+                  min="0.5"
+                  max="24"
+                  step="0.5"
+                  inputmode="decimal"
+                  placeholder="8.0"
+                  required
+                >
+
+                <span class="input-suffix">hrs</span>
+              </div>
+
+              <div
+                class="quick-hours"
+                aria-label="Quick hour selections"
+              >
+                <button
+                  type="button"
+                  class="quick-hour-button"
+                  data-hours="4"
+                >
+                  4
+                </button>
+
+                <button
+                  type="button"
+                  class="quick-hour-button"
+                  data-hours="8"
+                >
+                  8
+                </button>
+
+                <button
+                  type="button"
+                  class="quick-hour-button"
+                  data-hours="10"
+                >
+                  10
+                </button>
+
+                <button
+                  type="button"
+                  class="quick-hour-button"
+                  data-hours="12"
+                >
+                  12
+                </button>
+              </div>
+
+            </div>
+          </fieldset>
+
+
+          <!-- =================================================
+               4. WORK CATEGORY
+          ================================================== -->
+          <fieldset class="form-group category-group">
+            <legend class="form-label">
+              <span class="field-number">04</span>
+              Work Category
+            </legend>
+
+            <p class="field-help">
+              Select all that apply.
+            </p>
+
+            <div
+              class="category-grid"
+              id="work-categories"
+            >
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Raceway / EMT"
+                >
+                <span>Raceway / EMT</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Conduit Bending"
+                >
+                <span>Conduit Bending</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Boxes / Fittings"
+                >
+                <span>Boxes / Fittings</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Wire Pulling"
+                >
+                <span>Wire Pulling</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Devices"
+                >
+                <span>Devices</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Panels / Feeders"
+                >
+                <span>Panels / Feeders</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Supports / Strut"
+                >
+                <span>Supports / Strut</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Blueprint / Layout"
+                >
+                <span>Blueprint / Layout</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Testing"
+                >
+                <span>Testing</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Troubleshooting"
+                >
+                <span>Troubleshooting</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Safety"
+                >
+                <span>Safety</span>
+              </label>
+
+              <label class="category-chip">
+                <input
+                  type="checkbox"
+                  name="workCategory"
+                  value="Other"
+                >
+                <span>Other</span>
+              </label>
+
+            </div>
+          </fieldset>
+
+
+          <!-- =================================================
+               5. WORK PERFORMED
+          ================================================== -->
+          <div class="form-group">
+            <label for="work-performed" class="form-label">
+              <span class="field-number">05</span>
+              Work Performed
+            </label>
+
+            <p class="field-help">
+              Describe the work you performed or received OTJ training on.
+              Voice dictation can be used from your phone keyboard.
+            </p>
+
+            <textarea
+              id="work-performed"
+              name="workPerformed"
+              class="form-control work-textarea"
+              rows="7"
+              placeholder="Example: Ran 3/4&quot; EMT toward Panel A, installed overhead supports, and received OTJ instruction on bending 90s and kicked offsets."
+              required
+            ></textarea>
+          </div>
+
+
+          <!-- =================================================
+               GENERATE
+          ================================================== -->
+          <div class="form-actions">
+            <button
+              type="submit"
+              id="generate-log"
+              class="button button-primary button-generate"
+            >
+              Generate Log
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+
+      <!-- =======================================================
+           GENERATED LOG PREVIEW
+      ======================================================== -->
+      <section
+        id="log-output-section"
+        class="log-output-section"
+        aria-labelledby="preview-heading"
+        hidden
+      >
+
+        <div class="section-heading">
+          <p class="section-kicker">Generated Record</p>
+          <h2 id="preview-heading">Log Preview</h2>
+        </div>
+
+
+        <article
+          id="log-preview"
+          class="log-preview"
+          aria-live="polite"
+        >
+
+          <header class="preview-header">
+            <p class="preview-company">
+              OHM ELECTRICAL SERVICES
+            </p>
+
+            <p class="preview-title">
+              DAILY OTJ WORK LOG
+            </p>
+          </header>
+
+
+          <div class="preview-meta">
+
+            <div class="preview-meta-row">
+              <span class="preview-label">Employee:</span>
+              <span id="preview-employee">John Johnson</span>
+            </div>
+
+            <div class="preview-meta-row">
+              <span class="preview-label">Date:</span>
+              <span id="preview-date"></span>
+            </div>
+
+            <div class="preview-meta-row">
+              <span class="preview-label">Project:</span>
+              <span id="preview-project"></span>
+            </div>
+
+            <div class="preview-meta-row">
+              <span class="preview-label">Hours:</span>
+              <span id="preview-hours"></span>
+            </div>
+
+          </div>
+
+
+          <div class="preview-section">
+            <h3 class="preview-section-title">
+              Work Category
+            </h3>
+
+            <div id="preview-categories"></div>
+          </div>
+
+
+          <div class="preview-section">
+            <h3 class="preview-section-title">
+              Work Performed
+            </h3>
+
+            <p id="preview-work-performed"></p>
+          </div>
+
+        </article>
+
+
+        <!-- Plain-text output used by JavaScript for copy/download -->
+        <textarea
+          id="generated-log-text"
+          class="generated-log-text"
+          aria-label="Generated text version of OTJ log"
+          readonly
+          hidden
+        ></textarea>
+
+
+        <!-- =====================================================
+             OUTPUT ACTIONS
+        ====================================================== -->
+        <div class="output-actions">
+
+          <button
+            type="button"
+            id="copy-log"
+            class="button button-primary"
+          >
+            Copy Log
+          </button>
+
+          <button
+            type="button"
+            id="download-log"
+            class="button button-secondary"
+          >
+            Download Log
+          </button>
+
+        </div>
+
+
+        <!-- =====================================================
+             STATUS MESSAGE
+        ====================================================== -->
+        <p
+          id="action-status"
+          class="action-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+
+        <!-- =====================================================
+             RESET / NEW LOG
+        ====================================================== -->
+        <div class="new-log-action">
+          <button
+            type="button"
+            id="reset-log"
+            class="button button-text"
+          >
+            New Log / Reset
+          </button>
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+    <footer class="site-footer">
+      <p>Ohm Electrical Services</p>
+      <p>Daily OTJ Documentation</p>
+    </footer>
+
+  </div>
+
+
+  <script src="app.js" defer></script>
+
+</body>
+</html>
